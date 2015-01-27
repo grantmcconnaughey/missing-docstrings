@@ -47,5 +47,32 @@ class TestDocstringDetection(unittest.TestCase):
         self.assertFalse(missing_docstrings.has_docstring(line))
 
 
+class TestAddToUndocumentedFunctions(unittest.TestCase):
+
+    def tearDown(self):
+        missing_docstrings.UNDOCUMENTED_FUNCTIONS = {}
+
+    def test_add_to_undocumented_functions(self):
+        file = '/Users/test/test.py'
+        line = 'def this_is_a_test():'
+
+        missing_docstrings.add_to_undocumented_functions(file, line)
+
+        self.assertEqual(len(missing_docstrings.UNDOCUMENTED_FUNCTIONS), 1)
+
+    def test_add_duplicate_to_undocumented_functions(self):
+        file = '/Users/test/test.py'
+        line = 'def this_is_a_test():'
+
+        # Add multiple lines from the same file
+        missing_docstrings.add_to_undocumented_functions(file, line)
+        missing_docstrings.add_to_undocumented_functions(file, line)
+
+        # There is still only one entry in UNDOCUMENTED_FUNCTIONS
+        self.assertEqual(len(missing_docstrings.UNDOCUMENTED_FUNCTIONS), 1)
+        # But there are two entries for that particular file
+        self.assertEqual(len(missing_docstrings.UNDOCUMENTED_FUNCTIONS[file]), 2)
+
+
 if __name__ == '__main__':
     unittest.main()
