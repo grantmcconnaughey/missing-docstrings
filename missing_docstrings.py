@@ -5,9 +5,14 @@ import sys
 import os
 
 
+# A list of lines that contain documented functions
 DOCUMENTED_FUNCTIONS = []
-FILES_WITH_FUNCTIONS = {}
 
+# A dict where the key is the file name and the value is a list of
+# lines that contain undocumented functions.
+UNDOCUMENTED_FUNCTIONS = {}
+
+# A tuple of file names to ignore while scanning.
 FILES_TO_IGNORE = (
     'test.py',
 )
@@ -30,11 +35,11 @@ def has_docstring(line):
     return clean_line.startswith('"""')
 
 
-def output_function_without_docstring(file, line):
-    if FILES_WITH_FUNCTIONS.get(file, False):
-        FILES_WITH_FUNCTIONS[file].append(line)
+def add_to_undocumented_functions(file, line):
+    if UNDOCUMENTED_FUNCTIONS.get(file, False):
+        UNDOCUMENTED_FUNCTIONS[file].append(line)
     else:
-        FILES_WITH_FUNCTIONS[file] = [line]
+        UNDOCUMENTED_FUNCTIONS[file] = [line]
 
 
 def process_python_file(file):
@@ -45,13 +50,13 @@ def process_python_file(file):
                 if has_docstring(lines[i+1]):
                     DOCUMENTED_FUNCTIONS.append(line)
                 else:
-                    output_function_without_docstring(file, line)
+                    add_to_undocumented_functions(file, line)
 
 
 def print_results():
     num_undocumented_functions = 0
     # Print detail lines
-    for file, lines in FILES_WITH_FUNCTIONS.items():
+    for file, lines in UNDOCUMENTED_FUNCTIONS.items():
         print file
         for line in lines:
             num_undocumented_functions += 1
@@ -62,7 +67,7 @@ def print_results():
     num_documented_functions = len(DOCUMENTED_FUNCTIONS)
     num_functions = num_documented_functions + num_undocumented_functions
     percent_documented = num_documented_functions / num_functions * 100
-    print '{} files scanned.'.format(len(FILES_WITH_FUNCTIONS.keys()))
+    print '{} files scanned.'.format(len(UNDOCUMENTED_FUNCTIONS.keys()))
     print '{} documented functions, {} undocumented functions.'.format(
         num_documented_functions,
         num_undocumented_functions
