@@ -19,13 +19,11 @@ Example output:
     def view_list(request, list_id):
 
 /Users/grant/Dev/django/superlists/lists/forms.py
-
     def __init__(self, for_list, *args, **kwargs):
 
     def save(self):
 
 /Users/grant/Dev/django/superlists/lists/tests/test_models.py
-
     def test_get_absolute_url(self):
 
     def test_duplicate_items_are_invalid(self):
