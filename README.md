@@ -32,6 +32,7 @@ Example output:
     def test_layout_and_styling(self):
 
 9 files scanned.
+53 total functions
 6 documented functions, 47 undocumented functions.
 11.321% documented
 ```

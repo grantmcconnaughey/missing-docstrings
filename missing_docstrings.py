@@ -121,28 +121,33 @@ def process_file(file_path):
                     add_to_undocumented_functions(file_path, line)
 
 
-def print_results():
-    """Prints the results of the script's run."""
-    # Print detail lines
+def print_detail_lines():
     for file, lines in UNDOCUMENTED_FUNCTIONS.items():
-        print file
+        print(file)
         for line in lines:
-            print '\t' + line.strip()
-            print ''
+            print('\t' + line.strip())
+            print('')
 
-    # Print summary
+
+def print_summary():
     num_undocumented_functions = _get_num_of_functions(UNDOCUMENTED_FUNCTIONS)
     num_documented_functions = _get_num_of_functions(DOCUMENTED_FUNCTIONS)
     num_functions = num_documented_functions + num_undocumented_functions
     num_files_scanned = len(UNDOCUMENTED_FUNCTIONS.keys())
     percent_documented = num_documented_functions / num_functions * 100
-    print '{} files scanned.'.format(num_files_scanned)
-    print '{} total functions'.format(num_functions)
-    print '{} documented functions, {} undocumented functions.'.format(
+    print('{} files scanned.'.format(num_files_scanned))
+    print('{} total functions'.format(num_functions))
+    print('{} documented functions, {} undocumented functions.'.format(
         num_documented_functions,
         num_undocumented_functions
-    )
-    print '{:.3f}% documented'.format(percent_documented)
+    ))
+    print('{:.3f}% documented'.format(percent_documented))
+
+
+def print_results():
+    """Prints the results of the script's run."""
+    print_detail_lines()
+    print_summary()
 
 
 def main():
