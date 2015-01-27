@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 from __future__ import division
-import re
 import sys
 import os
 
 
 # A list of lines that contain documented functions
-DOCUMENTED_FUNCTIONS = []
+DOCUMENTED_FUNCTIONS = {}
 
 # A dict where the key is the file name and the value is a list of
 # lines that contain undocumented functions.
@@ -16,6 +15,10 @@ UNDOCUMENTED_FUNCTIONS = {}
 FILES_TO_IGNORE = (
     'test.py',
 )
+
+
+def _get_num_of_functions(function_dict):
+    return len([item for sublist in function_dict.values() for item in sublist])
 
 
 def file_to_process(file_path):
@@ -75,18 +78,29 @@ def has_docstring(line):
     return line.strip().startswith('"""')
 
 
-def add_to_undocumented_functions(file_path, line):
+def _add_to_function_dict(function_dict, file_path, line):
     """
-    Adds an undocumented function to the UNDOCUMENTED_FUNCTIONS constant.
+    Adds a documented function to a function dict
+    (DOCUMENTED_FUNCTIONS or UNDOCUMENTED_FUNCTIONS).
 
     Args:
-        file_path (str): The path to the file with the undocumented function.
-        line (str): The line that contains the undocumented function.
+        function_dict (dict): A function dict data structure
+            (either DOCUMENTED_FUNCTIONS or UNDOCUMENTED_FUNCTIONS)
+        file_path (str): The path to the file with the documented function.
+        line (str): The line that contains the documented function.
     """
-    if UNDOCUMENTED_FUNCTIONS.get(file_path, False):
-        UNDOCUMENTED_FUNCTIONS[file_path].append(line)
+    if function_dict.get(file_path, False):
+        function_dict[file_path].append(line)
     else:
-        UNDOCUMENTED_FUNCTIONS[file_path] = [line]
+        function_dict[file_path] = [line]
+
+
+def add_to_undocumented_functions(file_path, line):
+    _add_to_function_dict(UNDOCUMENTED_FUNCTIONS, file_path, line)
+
+
+def add_to_documented_functions(file_path, line):
+    _add_to_function_dict(DOCUMENTED_FUNCTIONS, file_path, line)
 
 
 def process_file(file_path):
@@ -102,27 +116,27 @@ def process_file(file_path):
         for i, line in enumerate(lines):
             if is_function(line):
                 if has_docstring(lines[i+1]):
-                    DOCUMENTED_FUNCTIONS.append(line)
+                    add_to_documented_functions(file_path, line)
                 else:
                     add_to_undocumented_functions(file_path, line)
 
 
 def print_results():
     """Prints the results of the script's run."""
-    num_undocumented_functions = 0
     # Print detail lines
     for file, lines in UNDOCUMENTED_FUNCTIONS.items():
         print file
         for line in lines:
-            num_undocumented_functions += 1
             print '\t' + line.strip()
             print ''
 
     # Print summary
-    num_documented_functions = len(DOCUMENTED_FUNCTIONS)
+    num_undocumented_functions = _get_num_of_functions(UNDOCUMENTED_FUNCTIONS)
+    num_documented_functions = _get_num_of_functions(DOCUMENTED_FUNCTIONS)
     num_functions = num_documented_functions + num_undocumented_functions
+    num_files_scanned = len(UNDOCUMENTED_FUNCTIONS.keys())
     percent_documented = num_documented_functions / num_functions * 100
-    print '{} files scanned.'.format(len(UNDOCUMENTED_FUNCTIONS.keys()))
+    print '{} files scanned.'.format(num_files_scanned)
     print '{} total functions'.format(num_functions)
     print '{} documented functions, {} undocumented functions.'.format(
         num_documented_functions,
