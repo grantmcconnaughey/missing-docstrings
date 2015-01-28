@@ -26,24 +26,36 @@ class TestFunctionDetection(unittest.TestCase):
 
 class TestDocstringDetection(unittest.TestCase):
 
-    def test_valid_line_has_docstring(self):
+    def test_valid_line_docstring(self):
         line = '"""test docstring"""'
         self.assertTrue(missing_docstrings.has_docstring(line))
 
-    def test_valid_line_with_spaces_has_docstring(self):
+    def test_valid_line_with_spaces_docstring(self):
         line = '    """test docstring"""    '
         self.assertTrue(missing_docstrings.has_docstring(line))
 
-    def test_valid_line_with_tabs_has_docstring(self):
+    def test_valid_line_with_tabs_docstring(self):
         line = '\t\t"""test docstring"""\t\t'
         self.assertTrue(missing_docstrings.has_docstring(line))
 
-    def test_valid_multiline_has_docstrings(self):
+    def test_valid_multiline_docstring(self):
         line = '"""\nA multi-line\ndocstring."""'
         self.assertTrue(missing_docstrings.has_docstring(line))
 
-    def test_invalid_line_does_not_have_docstring(self):
+    def test_valid_single_quoted_docstring(self):
+        line = "'This is a docstring'"
+        self.assertTrue(missing_docstrings.has_docstring(line))
+
+    def test_valid_double_quoted_docstring(self):
+        line = '"This is a docstring"'
+        self.assertTrue(missing_docstrings.has_docstring(line))
+
+    def test_variable_assignment_does_not_have_docstring(self):
         line = 'variable = "test"'
+        self.assertFalse(missing_docstrings.has_docstring(line))
+
+    def test_class_definition_does_not_have_docstring(self):
+        line = 'class Tester:'
         self.assertFalse(missing_docstrings.has_docstring(line))
 
 

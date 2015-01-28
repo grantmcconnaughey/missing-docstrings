@@ -7,7 +7,7 @@ A command line utility to search a Python project for functions with missing doc
 Search an entire directory structure for functions/methods with missing docstrings:
 
 ```
-python missing-docstrings.py .
+python missing-docstrings.py /Users/grant/Dev/django/superlists/
 ```
 
 Example output:
@@ -35,4 +35,21 @@ Example output:
 53 total functions
 6 documented functions, 47 undocumented functions.
 11.321% documented
+```
+
+## Known Issues
+
+* Only works if function definitions are on one line. For instance, this docstring will be detected:
+
+```python
+def my_function(arg1, arg2, arg3):
+    """My function docstring"""
+```
+
+While this will be falsely reported as a function without a docstring:
+
+```python
+def my_function(arg1, arg2,
+                arg3, arg4):
+    """My function docstring"""
 ```

@@ -75,7 +75,10 @@ def has_docstring(line):
     Returns:
         bool: True if the line is a docstring.
     """
-    return line.strip().startswith('"""')
+    clean_line = line.strip()
+    return (clean_line.startswith('"""')
+            or clean_line.startswith("'")
+            or clean_line.startswith('"'))
 
 
 def _add_to_function_dict(function_dict, file_path, line):
@@ -121,7 +124,7 @@ def process_file(file_path):
                     add_to_undocumented_functions(file_path, line)
 
 
-def print_detail_lines():
+def _print_detail_lines():
     for file, lines in UNDOCUMENTED_FUNCTIONS.items():
         print(file)
         for line in lines:
@@ -129,7 +132,7 @@ def print_detail_lines():
             print('')
 
 
-def print_summary():
+def _print_summary():
     num_undocumented_functions = _get_num_of_functions(UNDOCUMENTED_FUNCTIONS)
     num_documented_functions = _get_num_of_functions(DOCUMENTED_FUNCTIONS)
     num_functions = num_documented_functions + num_undocumented_functions
@@ -146,8 +149,8 @@ def print_summary():
 
 def print_results():
     """Prints the results of the script's run."""
-    print_detail_lines()
-    print_summary()
+    _print_detail_lines()
+    _print_summary()
 
 
 def main():
