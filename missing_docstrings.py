@@ -19,7 +19,7 @@ FILES_TO_IGNORE = (
 )
 
 
-FUNCTION_REGEX = r'^\s*def\s+.*\(.*\):'
+FUNCTION_REGEX = re.compile(r'^\s*def\s+.*\(.*\):')
 
 
 def _get_num_of_functions(function_dict):
@@ -67,7 +67,7 @@ def is_full_function_definition(line):
     Returns:
         bool: True if the line is a function declaration.
     """
-    return re.match(FUNCTION_REGEX, line)
+    return FUNCTION_REGEX.match(line)
 
 
 def has_docstring(line):
