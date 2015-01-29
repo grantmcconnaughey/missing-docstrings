@@ -1,27 +1,62 @@
 import unittest
 import missing_docstrings
+import re
 
 class TestFunctionDetection(unittest.TestCase):
 
     def test_valid_line_is_function(self):
         line = 'def test_func(self):'
-        self.assertTrue(missing_docstrings.is_function(line))
+        self.assertTrue(missing_docstrings.is_full_function_definition(line))
 
     def test_valid_line_with_spaces_is_function(self):
         line = '    def test_func(self):'
-        self.assertTrue(missing_docstrings.is_function(line))
+        self.assertTrue(missing_docstrings.is_full_function_definition(line))
 
     def test_valid_line_with_tabs_is_function(self):
         line = '\t\tdef test_func(self):'
-        self.assertTrue(missing_docstrings.is_function(line))
+        self.assertTrue(missing_docstrings.is_full_function_definition(line))
 
     def test_variable_assignment_is_not_function(self):
         line = 'variable = True'
-        self.assertFalse(missing_docstrings.is_function(line))
+        self.assertFalse(missing_docstrings.is_full_function_definition(line))
 
     def test_class_declaration_is_not_function(self):
         line = 'class MyClass:'
-        self.assertFalse(missing_docstrings.is_function(line))
+        self.assertFalse(missing_docstrings.is_full_function_definition(line))
+
+
+class TestFunctionRegex(unittest.TestCase):
+
+    def setUp(self):
+        self.function_regex = missing_docstrings.FUNCTION_REGEX
+
+    def test_function_no_arguments(self):
+        function_def = 'def test_function():'
+        self.assertTrue(re.match(self.function_regex, function_def))
+
+    def test_function_one_argument(self):
+        function_def = 'def test_function(arg1):'
+        self.assertTrue(re.match(self.function_regex, function_def))
+
+    def test_function_two_arguments(self):
+        function_def = 'def test_function(arg1, arg2):'
+        self.assertTrue(re.match(self.function_regex, function_def))
+
+    def test_function_with_leading_whitespace(self):
+        function_def = '   def test_function(arg1, arg2):'
+        self.assertTrue(re.match(self.function_regex, function_def))
+
+    def test_function_with_trailing_whitespace(self):
+        function_def = 'def test_function(arg1, arg2):    '
+        self.assertTrue(re.match(self.function_regex, function_def))
+
+    def test_function_multi_lines(self):
+        function_def = 'def test_function(arg1,\n'
+        self.assertFalse(re.match(self.function_regex, function_def))
+
+    def test_function_call(self):
+        non_function = 'definition(arg1)'
+        self.assertFalse(re.match(self.function_regex, non_function))
 
 
 class TestDocstringDetection(unittest.TestCase):

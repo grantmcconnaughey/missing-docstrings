@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from __future__ import division
+import re
 import sys
 import os
 
@@ -14,7 +15,11 @@ UNDOCUMENTED_FUNCTIONS = {}
 # A tuple of file names to ignore while scanning.
 FILES_TO_IGNORE = (
     'test.py',
+    'tests.py',
 )
+
+
+FUNCTION_REGEX = r'^\s*def\s+.*\(.*\):'
 
 
 def _get_num_of_functions(function_dict):
@@ -52,9 +57,9 @@ def file_to_ignore(file_path):
         return False
 
 
-def is_function(line):
+def is_full_function_definition(line):
     """
-    Determines if a line in a file is a function declaration.
+    Determines if a line in a file is a full one-line function declaration.
 
     Args:
         line (str): The line to check for a function declaration.
@@ -62,7 +67,7 @@ def is_function(line):
     Returns:
         bool: True if the line is a function declaration.
     """
-    return line.strip().startswith('def ')
+    return re.match(FUNCTION_REGEX, line)
 
 
 def has_docstring(line):
@@ -117,11 +122,15 @@ def process_file(file_path):
     with open(file_path, 'r') as f:
         lines = f.readlines()
         for i, line in enumerate(lines):
-            if is_function(line):
-                if has_docstring(lines[i+1]):
-                    add_to_documented_functions(file_path, line)
-                else:
-                    add_to_undocumented_functions(file_path, line)
+            process_line(file_path, lines, line, i)
+
+
+def process_line(file_path, lines, line, i):
+    if is_full_function_definition(line):
+        if has_docstring(lines[i+1]):
+            add_to_documented_functions(file_path, line)
+        else:
+            add_to_undocumented_functions(file_path, line)
 
 
 def _print_detail_lines():
