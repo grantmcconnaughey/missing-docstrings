@@ -62,10 +62,7 @@ def file_to_ignore(file_path):
     path_parts = set(file_path.split(os.sep))
     # If the file should be ignored or if any of its path is in the
     # DIRS_TO_IGNORE tuple.
-    if file_name in FILES_TO_IGNORE or path_parts & set(DIRS_TO_IGNORE):
-        return True
-    else:
-        return False
+    return file_name in FILES_TO_IGNORE or path_parts & set(DIRS_TO_IGNORE)
 
 
 def is_full_function_definition(line):

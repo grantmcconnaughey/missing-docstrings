@@ -1,6 +1,7 @@
 import unittest
 import missing_docstrings
 
+
 class TestFunctionDetection(unittest.TestCase):
 
     def test_valid_line_is_function(self):
