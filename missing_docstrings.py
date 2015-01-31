@@ -21,6 +21,7 @@ FILES_TO_IGNORE = (
 DIRS_TO_IGNORE = (
     'migrations',
     'tests',
+    '.Trash',
 )
 
 
@@ -134,7 +135,7 @@ def process_file(file_path):
 
 def process_line(file_path, lines, line, i):
     if is_full_function_definition(line):
-        if has_docstring(lines[i+1]):
+        if len(lines) > (i+1) and has_docstring(lines[i+1]):
             add_to_documented_functions(file_path, line)
         else:
             add_to_undocumented_functions(file_path, line)
@@ -152,7 +153,10 @@ def _print_summary():
     num_documented_functions = _get_num_of_functions(DOCUMENTED_FUNCTIONS)
     num_functions = num_documented_functions + num_undocumented_functions
     num_files_scanned = len(UNDOCUMENTED_FUNCTIONS.keys())
-    percent_documented = num_documented_functions / num_functions * 100
+    try:
+        percent_documented = num_documented_functions / num_functions * 100
+    except ZeroDivisionError:
+        percent_documented = 0
     print('{} files scanned.'.format(num_files_scanned))
     print('{} total functions'.format(num_functions))
     print('{} documented functions, {} undocumented functions.'.format(
