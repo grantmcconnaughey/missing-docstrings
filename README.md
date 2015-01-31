@@ -7,7 +7,7 @@ A command line utility to search a Python project for functions with missing doc
 Search an entire directory structure for functions/methods with missing docstrings:
 
 ```
-python missing-docstrings.py /Users/grant/Dev/django/superlists/
+python missing_docstrings.py /Users/grant/Dev/django/superlists/
 ```
 
 Example output:
@@ -23,11 +23,6 @@ Example output:
 
     def save(self):
 
-/Users/grant/Dev/django/superlists/lists/tests/test_models.py
-    def test_get_absolute_url(self):
-
-    def test_duplicate_items_are_invalid(self):
-
 /Users/grant/Dev/django/superlists/functional_tests/test_layout_and_styling.py
     def test_layout_and_styling(self):
 
@@ -37,9 +32,22 @@ Example output:
 11.321% documented
 ```
 
+## Skipped files/directories
+
+Files with the following names will be skipped:
+
+* test.py
+* tests.py
+
+If a file has one of the following directories in its path then it will also be skipped:
+
+* migrations
+* tests
+* .Trash
+
 ## Known Issues
 
-* Only works if function definitions are on one line. For instance, this docstring will be detected:
+* Only works if function definitions are on one line. For instance, this function/docstring will be detected:
 
 ```python
 def my_function(arg1, arg2, arg3):
