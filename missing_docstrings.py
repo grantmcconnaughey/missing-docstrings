@@ -5,11 +5,9 @@ import sys
 import os
 
 
-# A list of lines that contain documented functions
+# Two dicts where the key is the file name and the value is a list of
+# lines that contain functions signatures.
 DOCUMENTED_FUNCTIONS = {}
-
-# A dict where the key is the file name and the value is a list of
-# lines that contain undocumented functions.
 UNDOCUMENTED_FUNCTIONS = {}
 
 # A tuple of file names to ignore while scanning.
@@ -28,6 +26,10 @@ DIRS_TO_IGNORE = (
 
 FUNCTION_REGEX = re.compile(r'^\s*def\s+.*\(.*\):\s*')
 DOCSTRING_REGEX = re.compile(r'^\s*("""|"|\').*$', re.DOTALL)
+
+
+SCRIPT_USAGE = """Usage:
+    python missing_docstrings.py {path_to_project_dir}"""
 
 
 def _get_num_of_functions(function_dict):
@@ -139,11 +141,10 @@ def process_line(file_path, lines, line, i):
 
 
 def _print_detail_lines():
-    for file, lines in UNDOCUMENTED_FUNCTIONS.items():
-        print(file)
+    for file_path, lines in UNDOCUMENTED_FUNCTIONS.items():
+        print(file_path)
         for line in lines:
-            print('\t' + line.strip())
-            print('')
+            print('    {line}\n'.format(line=line.strip()))
 
 
 def _print_summary():
@@ -162,15 +163,21 @@ def _print_summary():
 
 
 def print_results():
-    """Prints the results of the script's run."""
     _print_detail_lines()
     _print_summary()
 
 
 def main():
-    """Runs the script."""
+    if len(sys.argv) == 1:
+        sys.exit(SCRIPT_USAGE)
+
     starting_directory = sys.argv[1]
     full_directory_path = os.path.abspath(starting_directory)
+
+    if not os.path.exists(full_directory_path):
+        print("{} is not a valid path".format(full_directory_path))
+        sys.exit()
+
     for path, dirs, files in os.walk(full_directory_path):
         for f in files:
             file_path = os.path.join(path, f)
