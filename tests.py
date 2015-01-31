@@ -47,7 +47,7 @@ class TestFunctionRegex(unittest.TestCase):
         self.assertTrue(self.function_regex.match(function_def))
 
     def test_function_with_trailing_whitespace(self):
-        function_def = 'def test_function(arg1, arg2):    '
+        function_def = 'def test_function(arg1, arg2):    \n'
         self.assertTrue(self.function_regex.match(function_def))
 
     def test_function_with_comment(self):

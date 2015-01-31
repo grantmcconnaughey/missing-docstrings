@@ -25,7 +25,7 @@ DIRS_TO_IGNORE = (
 )
 
 
-FUNCTION_REGEX = re.compile(r'^\s*def\s+.*\(.*\):\s*')
+FUNCTION_REGEX = re.compile(r'^\s*def\s+.*\(.*\):\s*(#.*)?$', re.DOTALL)
 DOCSTRING_REGEX = re.compile(r'^\s*("""|"|\').*$', re.DOTALL)
 
 
