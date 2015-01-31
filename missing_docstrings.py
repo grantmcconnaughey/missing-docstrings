@@ -142,7 +142,7 @@ def process_line(file_path, lines, line, i):
 
 
 def _print_detail_lines():
-    for file_path, lines in UNDOCUMENTED_FUNCTIONS.items():
+    for file_path, lines in iter(sorted(UNDOCUMENTED_FUNCTIONS.items())):
         print(file_path)
         for line in lines:
             print('    {line}\n'.format(line=line.strip()))

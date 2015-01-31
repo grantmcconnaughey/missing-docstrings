@@ -46,7 +46,7 @@ def my_function(arg1, arg2, arg3):
     """My function docstring"""
 ```
 
-While this will be falsely reported as a function without a docstring:
+While this will not be considered a function, so it will be skipped:
 
 ```python
 def my_function(arg1, arg2,

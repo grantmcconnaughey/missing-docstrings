@@ -31,19 +31,19 @@ class TestFunctionRegex(unittest.TestCase):
         self.function_regex = missing_docstrings.FUNCTION_REGEX
 
     def test_function_no_arguments(self):
-        function_def = 'def test_function():'
+        function_def = 'def test_function():\n'
         self.assertTrue(self.function_regex.match(function_def))
 
     def test_function_one_argument(self):
-        function_def = 'def test_function(arg1):'
+        function_def = 'def test_function(arg1):\n'
         self.assertTrue(self.function_regex.match(function_def))
 
     def test_function_two_arguments(self):
-        function_def = 'def test_function(arg1, arg2):'
+        function_def = 'def test_function(arg1, arg2):\n'
         self.assertTrue(self.function_regex.match(function_def))
 
     def test_function_with_leading_whitespace(self):
-        function_def = '   def test_function(arg1, arg2):'
+        function_def = '   def test_function(arg1, arg2):\n'
         self.assertTrue(self.function_regex.match(function_def))
 
     def test_function_with_trailing_whitespace(self):
@@ -51,7 +51,7 @@ class TestFunctionRegex(unittest.TestCase):
         self.assertTrue(self.function_regex.match(function_def))
 
     def test_function_with_comment(self):
-        function_def = 'def test_function(): #  test comment'
+        function_def = 'def test_function(): #  test comment\n'
         self.assertTrue(self.function_regex.match(function_def))
 
     def test_function_multi_lines(self):
