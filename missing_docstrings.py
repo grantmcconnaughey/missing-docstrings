@@ -34,7 +34,7 @@ SCRIPT_USAGE = """Usage:
 
 
 def _get_num_of_functions(function_dict):
-    return len([item for sublist in function_dict.values() for item in sublist])
+    return len([item for sub in function_dict.values() for item in sub])
 
 
 def file_to_process(file_path):
