@@ -18,8 +18,15 @@ FILES_TO_IGNORE = (
     'tests.py',
 )
 
+# A tuple of directories to ignore. If a file has any of these directories
+# in its path then the file will be skipped.
+DIRS_TO_IGNORE = (
+    'migrations',
+    'tests',
+)
 
-FUNCTION_REGEX = re.compile(r'^\s*def\s+.*\(.*\):')
+
+FUNCTION_REGEX = re.compile(r'^\s*def\s+.*\(.*\):\s*')
 
 
 def _get_num_of_functions(function_dict):
@@ -51,7 +58,10 @@ def file_to_ignore(file_path):
         bool: True if the file should be ignored by the script.
     """
     file_name = os.path.basename(file_path)
-    if file_name in FILES_TO_IGNORE:
+    path_parts = set(file_path.split(os.sep))
+    # If the file should be ignored or if any of its path is in the
+    # DIRS_TO_IGNORE tuple.
+    if file_name in FILES_TO_IGNORE or path_parts & set(DIRS_TO_IGNORE):
         return True
     else:
         return False

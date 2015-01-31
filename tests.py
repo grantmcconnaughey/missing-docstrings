@@ -1,6 +1,5 @@
 import unittest
 import missing_docstrings
-import re
 
 class TestFunctionDetection(unittest.TestCase):
 
@@ -48,6 +47,10 @@ class TestFunctionRegex(unittest.TestCase):
 
     def test_function_with_trailing_whitespace(self):
         function_def = 'def test_function(arg1, arg2):    '
+        self.assertTrue(self.function_regex.match(function_def))
+
+    def test_function_with_comment(self):
+        function_def = 'def test_function(): #  test comment'
         self.assertTrue(self.function_regex.match(function_def))
 
     def test_function_multi_lines(self):
