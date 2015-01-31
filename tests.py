@@ -62,6 +62,44 @@ class TestFunctionRegex(unittest.TestCase):
         self.assertFalse(self.function_regex.match(non_function))
 
 
+class TestDocstringRegex(unittest.TestCase):
+
+    def setUp(self):
+        self.regex = missing_docstrings.DOCSTRING_REGEX
+
+    def test_triple_string(self):
+        docstring = '    """test"""'
+        self.assertTrue(self.regex.match(docstring))
+
+    def test_double_quote(self):
+        docstring = '    "test"'
+        self.assertTrue(self.regex.match(docstring))
+
+    def test_single_quote(self):
+        docstring = "    'test'"
+        self.assertTrue(self.regex.match(docstring))
+
+    def test_no_leading_whitespace(self):
+        docstring = '"""test"""'
+        self.assertTrue(self.regex.match(docstring))
+
+    def test_trailing_newline(self):
+        docstring = '    """test"""\n'
+        self.assertTrue(self.regex.match(docstring))
+
+    def test_class_declaration(self):
+        class_def = '    class Tester:\n'
+        self.assertFalse(self.regex.match(class_def))
+
+    def test_function_multi_lines(self):
+        function_def = 'def test_function(arg1,\n'
+        self.assertFalse(self.regex.match(function_def))
+
+    def test_function_call(self):
+        function_call = 'definition(arg1)'
+        self.assertFalse(self.regex.match(function_call))
+
+
 class TestDocstringDetection(unittest.TestCase):
 
     def test_valid_line_docstring(self):

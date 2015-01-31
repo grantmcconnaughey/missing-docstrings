@@ -27,6 +27,7 @@ DIRS_TO_IGNORE = (
 
 
 FUNCTION_REGEX = re.compile(r'^\s*def\s+.*\(.*\):\s*')
+DOCSTRING_REGEX = re.compile(r'^\s*("""|"|\').*$', re.DOTALL)
 
 
 def _get_num_of_functions(function_dict):
@@ -77,7 +78,7 @@ def is_full_function_definition(line):
     Returns:
         bool: True if the line is a function declaration.
     """
-    return FUNCTION_REGEX.match(line)
+    return bool(FUNCTION_REGEX.match(line))
 
 
 def has_docstring(line):
@@ -90,10 +91,7 @@ def has_docstring(line):
     Returns:
         bool: True if the line is a docstring.
     """
-    clean_line = line.strip()
-    return (clean_line.startswith('"""')
-            or clean_line.startswith("'")
-            or clean_line.startswith('"'))
+    return bool(DOCSTRING_REGEX.match(line))
 
 
 def _add_to_function_dict(function_dict, file_path, line):
