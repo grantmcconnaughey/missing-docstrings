@@ -8,8 +8,8 @@ import os
 
 # Two dicts where the key is the file name and the value is a list of
 # lines that contain functions signatures.
-DOCUMENTED_FUNCTIONS = collections.defaultdict(list)
-UNDOCUMENTED_FUNCTIONS = collections.defaultdict(list)
+documented_functions = collections.defaultdict(list)
+undocumented_functions = collections.defaultdict(list)
 
 # A tuple of file names to ignore while scanning.
 FILES_TO_IGNORE = (
@@ -98,11 +98,11 @@ def has_docstring(line):
 def _add_to_function_dict(function_dict, file_path, line):
     """
     Adds a documented function to a function dict
-    (DOCUMENTED_FUNCTIONS or UNDOCUMENTED_FUNCTIONS).
+    (documented_functions or undocumented_functions).
 
     Args:
         function_dict (dict): A function dict data structure
-            (either DOCUMENTED_FUNCTIONS or UNDOCUMENTED_FUNCTIONS)
+            (either documented_functions or undocumented_functions)
         file_path (str): The path to the file with the documented function.
         line (str): The line that contains the documented function.
     """
@@ -110,11 +110,11 @@ def _add_to_function_dict(function_dict, file_path, line):
 
 
 def add_to_undocumented_functions(file_path, line):
-    _add_to_function_dict(UNDOCUMENTED_FUNCTIONS, file_path, line)
+    _add_to_function_dict(undocumented_functions, file_path, line)
 
 
 def add_to_documented_functions(file_path, line):
-    _add_to_function_dict(DOCUMENTED_FUNCTIONS, file_path, line)
+    _add_to_function_dict(documented_functions, file_path, line)
 
 
 def process_file(file_path):
@@ -140,17 +140,17 @@ def process_line(file_path, lines, line, i):
 
 
 def _print_detail_lines():
-    for file_path, lines in iter(sorted(UNDOCUMENTED_FUNCTIONS.items())):
+    for file_path, lines in iter(sorted(undocumented_functions.items())):
         print(file_path)
         for line in lines:
             print('    {line}\n'.format(line=line.strip()))
 
 
 def _print_summary():
-    num_undocumented_functions = _get_num_of_functions(UNDOCUMENTED_FUNCTIONS)
-    num_documented_functions = _get_num_of_functions(DOCUMENTED_FUNCTIONS)
+    num_undocumented_functions = _get_num_of_functions(undocumented_functions)
+    num_documented_functions = _get_num_of_functions(documented_functions)
     num_functions = num_documented_functions + num_undocumented_functions
-    num_files_scanned = len(UNDOCUMENTED_FUNCTIONS.keys())
+    num_files_scanned = len(undocumented_functions.keys())
     try:
         percent_documented = num_documented_functions / num_functions * 100
     except ZeroDivisionError:
