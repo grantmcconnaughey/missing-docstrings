@@ -1,3 +1,4 @@
+import collections
 import unittest
 import missing_docstrings
 
@@ -139,7 +140,7 @@ class TestDocstringDetection(unittest.TestCase):
 class TestAddToUndocumentedFunctions(unittest.TestCase):
 
     def tearDown(self):
-        missing_docstrings.UNDOCUMENTED_FUNCTIONS = {}
+        missing_docstrings.UNDOCUMENTED_FUNCTIONS = collections.defaultdict(list)
 
     def test_add_to_undocumented_functions(self):
         file = '/Users/test/test.py'

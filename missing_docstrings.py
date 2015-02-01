@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from __future__ import division
+import collections
 import re
 import sys
 import os
@@ -7,8 +8,8 @@ import os
 
 # Two dicts where the key is the file name and the value is a list of
 # lines that contain functions signatures.
-DOCUMENTED_FUNCTIONS = {}
-UNDOCUMENTED_FUNCTIONS = {}
+DOCUMENTED_FUNCTIONS = collections.defaultdict(list)
+UNDOCUMENTED_FUNCTIONS = collections.defaultdict(list)
 
 # A tuple of file names to ignore while scanning.
 FILES_TO_IGNORE = (
@@ -105,10 +106,7 @@ def _add_to_function_dict(function_dict, file_path, line):
         file_path (str): The path to the file with the documented function.
         line (str): The line that contains the documented function.
     """
-    if function_dict.get(file_path, False):
-        function_dict[file_path].append(line)
-    else:
-        function_dict[file_path] = [line]
+    function_dict[file_path].append(line)
 
 
 def add_to_undocumented_functions(file_path, line):
