@@ -6,7 +6,7 @@ import sys
 import os
 
 
-# Two dicts where the key is the file name and the value is a list of
+# Two defaultdicts where the key is the file name and the value is a list of
 # lines that contain functions signatures.
 documented_functions = collections.defaultdict(list)
 undocumented_functions = collections.defaultdict(list)
@@ -95,26 +95,12 @@ def has_docstring(line):
     return bool(DOCSTRING_REGEX.match(line))
 
 
-def _add_to_function_dict(function_dict, file_path, line):
-    """
-    Adds a documented function to a function dict
-    (documented_functions or undocumented_functions).
-
-    Args:
-        function_dict (dict): A function dict data structure
-            (either documented_functions or undocumented_functions)
-        file_path (str): The path to the file with the documented function.
-        line (str): The line that contains the documented function.
-    """
-    function_dict[file_path].append(line)
-
-
 def add_to_undocumented_functions(file_path, line):
-    _add_to_function_dict(undocumented_functions, file_path, line)
+    undocumented_functions[file_path].append(line)
 
 
 def add_to_documented_functions(file_path, line):
-    _add_to_function_dict(documented_functions, file_path, line)
+    documented_functions[file_path].append(line)
 
 
 def process_file(file_path):
