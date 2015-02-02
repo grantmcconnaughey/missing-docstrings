@@ -107,6 +107,11 @@ def process_line(file_path, lines, line, current_index):
                 break
 
 
+def print_results():
+    _print_detail_lines()
+    _print_summary()
+
+
 def _print_detail_lines():
     for file_path, lines in iter(sorted(undocumented_functions.items())):
         print(file_path)
@@ -130,11 +135,6 @@ def _print_summary():
         num_undocumented_functions
     ))
     print('{:.3f}% documented'.format(percent_documented))
-
-
-def print_results():
-    _print_detail_lines()
-    _print_summary()
 
 
 def main():
