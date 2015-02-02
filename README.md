@@ -44,20 +44,3 @@ If a file has one of the following directories in its path then it will also be 
 * migrations
 * tests
 * .Trash
-
-## Known Issues
-
-* Only works if function definitions are on one line. For instance, this function/docstring will be detected:
-
-```python
-def my_function(arg1, arg2, arg3):
-    """My function docstring"""
-```
-
-While this will not be considered a function, so it will be skipped:
-
-```python
-def my_function(arg1, arg2,
-                arg3, arg4):
-    """My function docstring"""
-```

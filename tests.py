@@ -5,16 +5,32 @@ import missing_docstrings
 
 class TestFunctionDetection(unittest.TestCase):
 
-    def test_valid_line_is_function(self):
-        line = 'def test_func(self):'
-        self.assertTrue(missing_docstrings.is_full_function_definition(line))
-
-    def test_valid_line_with_spaces_is_function(self):
-        line = '    def test_func(self):'
-        self.assertTrue(missing_docstrings.is_full_function_definition(line))
-
     def test_valid_line_with_tabs_is_function(self):
         line = '\t\tdef test_func(self):'
+        self.assertTrue(missing_docstrings.is_full_function_definition(line))
+
+    def test_function_no_arguments(self):
+        line = 'def test_function():\n'
+        self.assertTrue(missing_docstrings.is_full_function_definition(line))
+
+    def test_function_one_argument(self):
+        line = 'def test_function(arg1):\n'
+        self.assertTrue(missing_docstrings.is_full_function_definition(line))
+
+    def test_function_two_arguments(self):
+        line = 'def test_function(arg1, arg2):\n'
+        self.assertTrue(missing_docstrings.is_full_function_definition(line))
+
+    def test_function_with_leading_whitespace(self):
+        line = '   def test_function(arg1, arg2):\n'
+        self.assertTrue(missing_docstrings.is_full_function_definition(line))
+
+    def test_function_with_trailing_whitespace(self):
+        line = 'def test_function(arg1, arg2):    \n'
+        self.assertTrue(missing_docstrings.is_full_function_definition(line))
+
+    def test_function_with_comment(self):
+        line = 'def test_function(): #  test comment\n'
         self.assertTrue(missing_docstrings.is_full_function_definition(line))
 
     def test_variable_assignment_is_not_function(self):
@@ -25,43 +41,59 @@ class TestFunctionDetection(unittest.TestCase):
         line = 'class MyClass:'
         self.assertFalse(missing_docstrings.is_full_function_definition(line))
 
-
-class TestFunctionRegex(unittest.TestCase):
-
-    def setUp(self):
-        self.function_regex = missing_docstrings.FUNCTION_REGEX
-
-    def test_function_no_arguments(self):
-        function_def = 'def test_function():\n'
-        self.assertTrue(self.function_regex.match(function_def))
-
-    def test_function_one_argument(self):
-        function_def = 'def test_function(arg1):\n'
-        self.assertTrue(self.function_regex.match(function_def))
-
-    def test_function_two_arguments(self):
-        function_def = 'def test_function(arg1, arg2):\n'
-        self.assertTrue(self.function_regex.match(function_def))
-
-    def test_function_with_leading_whitespace(self):
-        function_def = '   def test_function(arg1, arg2):\n'
-        self.assertTrue(self.function_regex.match(function_def))
-
-    def test_function_with_trailing_whitespace(self):
-        function_def = 'def test_function(arg1, arg2):    \n'
-        self.assertTrue(self.function_regex.match(function_def))
-
-    def test_function_with_comment(self):
-        function_def = 'def test_function(): #  test comment\n'
-        self.assertTrue(self.function_regex.match(function_def))
-
     def test_function_multi_lines(self):
-        function_def = 'def test_function(arg1,\n'
-        self.assertFalse(self.function_regex.match(function_def))
+        line = 'def test_function(arg1,\n'
+        self.assertFalse(missing_docstrings.is_full_function_definition(line))
 
     def test_function_call(self):
-        non_function = 'definition(arg1)'
-        self.assertFalse(self.function_regex.match(non_function))
+        line = 'definition(arg1)'
+        self.assertFalse(missing_docstrings.is_full_function_definition(line))
+
+    def test_partial_function(self):
+        line = 'def test_func(arg1, arg2,\n'
+        self.assertFalse(missing_docstrings.is_full_function_definition(line))
+
+
+class TestPartialFunctionDetection(unittest.TestCase):
+
+    def test_partial_function(self):
+        line = 'def test_func(arg1, arg2,\n'
+        self.assertTrue(missing_docstrings.is_partial_function_definition(line))
+
+    def test_partial_function_with_comment(self):
+        line = 'def test_func(arg1, arg2,   # Function comment\n'
+        self.assertTrue(missing_docstrings.is_partial_function_definition(line))
+
+    def test_full_function(self):
+        line = 'def test_func(arg1, arg2, arg3):'
+        self.assertFalse(missing_docstrings.is_partial_function_definition(line))
+
+
+class TestFunctionEndDetection(unittest.TestCase):
+
+    def test_end_of_function_no_whitespace(self):
+        line = 'arg3, arg4):\n'
+        self.assertTrue(missing_docstrings.is_end_of_function_definition(line))
+
+    def test_end_of_function_leading_whitespace(self):
+        line = '    arg3, arg4):\n'
+        self.assertTrue(missing_docstrings.is_end_of_function_definition(line))
+
+    def test_end_of_function_trailing_whitespace(self):
+        line = 'arg3, arg4):     \n'
+        self.assertTrue(missing_docstrings.is_end_of_function_definition(line))
+
+    def test_end_of_function_with_comment(self):
+        line = 'arg3, arg4):  # Test comment\n'
+        self.assertTrue(missing_docstrings.is_end_of_function_definition(line))
+
+    def test_not_end_of_function(self):
+        line = '    arg3, arg4, arg5,\n'
+        self.assertFalse(missing_docstrings.is_end_of_function_definition(line))
+
+    def test_no_colon(self):
+        line = '    arg3, arg4, arg5)\n'
+        self.assertFalse(missing_docstrings.is_end_of_function_definition(line))
 
 
 class TestDocstringRegex(unittest.TestCase):

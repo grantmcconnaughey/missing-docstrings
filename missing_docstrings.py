@@ -18,7 +18,7 @@ FILES_TO_IGNORE = (
 )
 
 # A tuple of directories to ignore. If a file has any of these directories
-# in its path then the file will be skipped.
+# in its path then the file will bep skipped.
 DIRS_TO_IGNORE = (
     'migrations',
     'tests',
@@ -27,11 +27,15 @@ DIRS_TO_IGNORE = (
 
 
 FUNCTION_REGEX = re.compile(r'^\s*def\s+.*\(.*\):\s*(#.*)?$', re.DOTALL)
+PARTIAL_FUNCTION_REGEX = re.compile(r'^\s*def\s+.*\([^):]*(#.*)?$', re.DOTALL)
+FUNCTION_END_REGEX = re.compile(r'^.*\):\s*(#.*)?$', re.DOTALL)
 DOCSTRING_REGEX = re.compile(r'^\s*("""|"|\').*$', re.DOTALL)
 
 
 SCRIPT_USAGE = """Usage:
     python missing_docstrings.py {path_to_project_dir}"""
+
+FUNCTION_SPACING = '    '
 
 
 def _get_num_of_functions(function_dict):
@@ -39,29 +43,11 @@ def _get_num_of_functions(function_dict):
 
 
 def file_to_process(file_path):
-    """
-    Determines if a file should be processed by the script.
-
-    Args:
-        file_path (str): The path to the file.
-
-    Returns:
-        bool: True if the file should be processed by the script.
-    """
     file_name = os.path.basename(file_path)
     return file_name.endswith('.py')
 
 
 def file_to_ignore(file_path):
-    """
-    Determines if a file should be ignored by the script.
-
-    Args:
-        file_path (str): The path to the file.
-
-    Returns:
-        bool: True if the file should be ignored by the script.
-    """
     file_name = os.path.basename(file_path)
     path_parts = set(file_path.split(os.sep))
     # If the file should be ignored or if any of its path is in the
@@ -70,28 +56,18 @@ def file_to_ignore(file_path):
 
 
 def is_full_function_definition(line):
-    """
-    Determines if a line in a file is a full one-line function declaration.
-
-    Args:
-        line (str): The line to check for a function declaration.
-
-    Returns:
-        bool: True if the line is a function declaration.
-    """
     return bool(FUNCTION_REGEX.match(line))
 
 
+def is_partial_function_definition(line):
+    return bool(PARTIAL_FUNCTION_REGEX.match(line))
+
+
+def is_end_of_function_definition(line):
+    return bool(FUNCTION_END_REGEX.match(line))
+
+
 def has_docstring(line):
-    """
-    Determines if a line in a file is a docstring.
-
-    Args:
-        line (str): The line to check for a docstring.
-
-    Returns:
-        bool: True if the line is a docstring.
-    """
     return bool(DOCSTRING_REGEX.match(line))
 
 
@@ -104,32 +80,38 @@ def add_to_documented_functions(file_path, line):
 
 
 def process_file(file_path):
-    """
-    Scans a file line by line and finds each function that
-    does not have an associated docstring.
-
-    Args:
-        file_path (str): The path to the file.
-    """
     with open(file_path, 'r') as f:
         lines = f.readlines()
         for i, line in enumerate(lines):
             process_line(file_path, lines, line, i)
 
 
-def process_line(file_path, lines, line, i):
+def process_line(file_path, lines, line, current_index):
     if is_full_function_definition(line):
-        if len(lines) > (i+1) and has_docstring(lines[i+1]):
+        if len(lines) > (current_index+1) and has_docstring(lines[current_index+1]):
             add_to_documented_functions(file_path, line)
         else:
             add_to_undocumented_functions(file_path, line)
+    elif is_partial_function_definition(line):
+        function_definition = line
+        # Try to find the end of the function definition over the next 20 lines
+        for k in range(current_index, current_index + 20):
+            current_line = lines[k+1]
+            next_line = lines[k+2]
+            function_definition += FUNCTION_SPACING + current_line
+            if is_end_of_function_definition(current_line):
+                if has_docstring(next_line):
+                    add_to_documented_functions(file_path, function_definition)
+                else:
+                    add_to_undocumented_functions(file_path, function_definition)
+                break
 
 
 def _print_detail_lines():
     for file_path, lines in iter(sorted(undocumented_functions.items())):
         print(file_path)
         for line in lines:
-            print('    {line}\n'.format(line=line.strip()))
+            print('{}{}\n'.format(FUNCTION_SPACING, line.strip()))
 
 
 def _print_summary():
