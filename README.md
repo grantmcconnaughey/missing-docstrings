@@ -4,10 +4,24 @@ A command line utility to search a Python project for functions with missing doc
 
 ## Usage
 
+```
+usage: missing_docstrings.py [-h] [--skipinit] [--skipinitpy] path
+
+positional arguments:
+  path          The path to your Python project
+
+optional arguments:
+  -h, --help    show this help message and exit
+  --skipinit    Flag that indicates if __init__() methods should be skipped.
+  --skipinitpy  Flag that indicates if __init__.py files should be skipped.
+```
+
+## Examples
+
 Search an entire directory structure for functions/methods with missing docstrings:
 
 ```
-python missing_docstrings.py /Users/grant/Dev/django/superlists/
+python missing_docstrings.py ~/Dev/django/superlists/
 ```
 
 Example output:
