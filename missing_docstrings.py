@@ -2,9 +2,7 @@
 from __future__ import division
 import argparse
 import collections
-import re
-import sys
-import os
+import re, sys, os
 
 
 # Two defaultdicts where the key is the file name and the value is a list of
